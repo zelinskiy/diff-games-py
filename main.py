@@ -56,6 +56,23 @@ pos_log = []
 y_log = []
 x0_log = []
 
+
+def emodel(pos, control):
+    maxspeed = 1
+    if(control[0] > maxspeed):
+        control[0] = maxspeed
+    if(control[1] > maxspeed):
+        control[1] = maxspeed
+    return pos + 0.1 * control
+
+def pmodel(pos, control):
+    maxspeed = 1
+    if(control[0] > maxspeed):
+        control[0] = maxspeed
+    if(control[1] > maxspeed):
+        control[1] = maxspeed
+    return pos + 0.25 * control
+
 i = 0
 for t_ in t:
     x0_log.append(np.copy(x[0]))
@@ -69,8 +86,10 @@ for t_ in t:
     ue_y = np.average(ue[:, 1])
     ue_avg = np.array([ue_x, ue_y])
 
-    y += ue_avg
-    x += up
+    y = emodel(y, ue_avg)
+    x[0] = pmodel(x[0], up[0])
+    x[1] = pmodel(x[1], up[1])
+    x[2] = pmodel(x[2], up[2])
 
     i += 1
 
