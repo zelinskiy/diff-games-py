@@ -55,6 +55,8 @@ pos_log = []
 
 y_log = []
 x0_log = []
+x1_log = []
+x2_log = []
 
 
 def emodel(pos, control):
@@ -76,6 +78,8 @@ def pmodel(pos, control):
 i = 0
 for t_ in t:
     x0_log.append(np.copy(x[0]))
+    x1_log.append(np.copy(x[1]))
+    x2_log.append(np.copy(x[2]))
     y_log.append(np.copy(y))
 
     z = x - np.kron(col1(N), y)
@@ -86,6 +90,8 @@ for t_ in t:
     ue_y = np.average(ue[:, 1])
     ue_avg = np.array([ue_x, ue_y])
 
+    # ue_avg = np.array([10, -2], dtype='float64')
+
     y = emodel(y, ue_avg)
     x[0] = pmodel(x[0], up[0])
     x[1] = pmodel(x[1], up[1])
@@ -94,16 +100,28 @@ for t_ in t:
     i += 1
 
 xs, ys = np.array(y_log).T
-plt.scatter(xs, ys, c='r')
-
-for i, t_ in enumerate(t):
-    plt.annotate(i, (xs[i], ys[i]))
-
-xs, ys = np.array(x0_log).T
 plt.scatter(xs, ys, c='g')
 
-for i, t_ in enumerate(t):
-    plt.annotate(i, (xs[i], ys[i]))
+# for i, t_ in enumerate(t):
+#     plt.annotate(i, (xs[i], ys[i]))
+
+xs, ys = np.array(x0_log).T
+plt.scatter(xs, ys, c='r')
+
+# for i, t_ in enumerate(t):
+    # plt.annotate(i, (xs[i], ys[i]))
+
+xs, ys = np.array(x1_log).T
+plt.scatter(xs, ys, c='r')
+
+# for i, t_ in enumerate(t):
+#     plt.annotate(i, (xs[i], ys[i]))
+
+xs, ys = np.array(x2_log).T
+plt.scatter(xs, ys, c='r')
+
+# for i, t_ in enumerate(t):
+#     plt.annotate(i, (xs[i], ys[i]))
 
 plt.show()
 
