@@ -1,15 +1,18 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from scipy.integrate import odeint
 
 from enum import Enum
 
+from vehicles.simple import AerialVehicleType
+
 class SimulationParams:
     def __init__(self):
         self.N = None
 
-        self.r_e = None
-        self.r_p = None
+        # self.r_e = None
+        # self.r_p = None
 
         self.q_e = None
         self.q_p = None
@@ -21,6 +24,24 @@ class SimulationParams:
         self.t_f = None
 
         self.d = None
+        self.finish_at_d = False
+
+    def set_default(self, N=3):
+        self.N = N
+
+        # self.r_e = 2
+        # self.r_p = 1
+
+        self.q_e = 2
+        self.q_p = 1
+
+        self.k_pf = 10
+        self.k_ef = 5
+
+        self.t_0 = 0
+        self.t_f = 4
+
+        self.d = 0.1
         self.finish_at_d = False
 
 class SimulationState(Enum):
@@ -35,8 +56,8 @@ class Simulation:
             pursuers):
         self.N = params.N
 
-        self.r_e = params.r_e
-        self.r_p = params.r_p
+        self.r_e = 1 / evader.max_xyspeed
+        self.r_p = 1 / pursuers[0].max_xyspeed
 
         self.q_e = params.q_e
         self.q_p = params.q_p
@@ -48,6 +69,7 @@ class Simulation:
         self.t_f = params.t_f
 
         self.d = params.d
+        self.finish_at_d = params.finish_at_d
 
         self.t = np.linspace(self.t_f, self.t_0)
 
@@ -99,24 +121,31 @@ class Simulation:
 
             z = np.array(x) - np.kron(np.full((self.N, 1), 1), self.evader.pos)
             econtrol = ((-1) / (self.N * self.r_e)) * self.K_e[i] * z
-            econtrol = np.array([np.average(econtrol[:, 0]), np.average(econtrol[:, 1])])
+            econtrol = econtrol.mean(axis=0)
             self.evader.move(econtrol)
             i += 1
         self.state = SimulationState.FINISHED
 
-    def show(self):
+    def show(self, show_ti=True):
         if(self.state != SimulationState.FINISHED):
             raise Exception("Simulation not finished")
         objects = [self.evader]
         for p in self.pursuers:
             objects.append(p)
+        if(self.evader.type == AerialVehicleType.D3):
+            ax = plt.axes(projection='3d')
         for i, o in enumerate(objects):
             color = 'g' if i == 0 else 'r'
 
-            xs, ys = np.array(o.pos_log).T
-            plt.scatter(xs, ys, c=color)
+            if(o.type == AerialVehicleType.D2):
+                xs, ys = np.array(o.pos_log).T
+                plt.plot(xs, ys, c=color, marker = "x",)
+            elif(o.type == AerialVehicleType.D3):
+                xs, ys, zs = np.array(o.pos_log).T
+                ax.plot3D(xs, ys, zs, c=color, marker = "x")
 
-            for i, p in enumerate(o.pos_log):
-                t_ = self.t[i-1]
-                plt.annotate(i, (xs[i], ys[i]))
+            if(show_ti):
+                for i, p in enumerate(o.pos_log):
+                    t_ = self.t[i-1]
+                    plt.annotate(i, (xs[i], ys[i]))
         plt.show()

@@ -1,6 +1,8 @@
 from vehicles.simple import SimpleAerialVehicle
 from simulation import SimulationParams, Simulation
 
+import numpy as np
+
 
 params = SimulationParams()
 params.set_default()
@@ -17,4 +19,4 @@ simulation = Simulation(params, evader, [pursuer1, pursuer2, pursuer3])
 
 simulation.build()
 simulation.run()
-simulation.show()
+simulation.show(show_ti=False)
