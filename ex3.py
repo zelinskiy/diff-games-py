@@ -3,6 +3,7 @@ from simulation import SimulationParams, Simulation
 
 import numpy as np
 
+# 3D example
 
 params = SimulationParams()
 params.set_default(N=2)

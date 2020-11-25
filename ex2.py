@@ -3,11 +3,13 @@ from simulation import SimulationParams, Simulation
 
 import numpy as np
 
+# Example with 5 pursuers
 
 params = SimulationParams()
 params.set_default(N=5)
 params.finish_at_d = True
 params.t_f = 10
+
 
 pursuer1 = SimpleAerialVehicle(name="p1", init_pos=np.array([20, 0], dtype='float64'))
 pursuer2 = SimpleAerialVehicle(name="p2", init_pos=np.array([0, 0], dtype='float64'))

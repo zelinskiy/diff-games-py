@@ -26,6 +26,8 @@ class SimulationParams:
         self.d = None
         self.finish_at_d = False
 
+        self.npoints = None
+
     def set_default(self, N=3):
         self.N = N
 
@@ -43,6 +45,8 @@ class SimulationParams:
 
         self.d = 0.1
         self.finish_at_d = False
+
+        self.npoints = 50
 
 class SimulationState(Enum):
     INIT = 1
@@ -71,7 +75,9 @@ class Simulation:
         self.d = params.d
         self.finish_at_d = params.finish_at_d
 
-        self.t = np.linspace(self.t_f, self.t_0)
+        self.npoints = params.npoints
+
+        self.t = np.linspace(self.t_f, self.t_0, num=self.npoints)
 
         self.evader = evader
         self.pursuers = pursuers
