@@ -5,6 +5,8 @@ import numpy as np
 
 # To be transformed as SITL simulation
 
+# TODO: add global coefficient
+
 params = SimulationParams()
 params.set_default()
 
