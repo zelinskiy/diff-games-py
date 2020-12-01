@@ -33,7 +33,7 @@ class Drone:
         self.master.mav.command_long_send(
             self.master.target_system,
             self.master.target_component,
-            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            mavutil.mavlink.MAV_CMD_NAV_SPLINE_WAYPOINT,
             0, # confirmation
             arm, # arm
             0,
@@ -148,6 +148,42 @@ class Drone:
         # first wp is ignored somewhy
         self._sendMission([takeoff_wp, takeoff_wp])
         self.startMission()
+
+    def sendWaypoints(self, wps, alt=20):
+        takeoff_wp = mavutil.mavlink.MAVLink_mission_item_message(
+            self.master.target_system,
+            self.master.target_component,
+            -1, # to be set
+            mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+            0,
+            0,
+            0, # min pitch
+            0,
+            0,
+            0,
+            0,
+            0,
+            alt)
+        wps_ = [takeoff_wp, takeoff_wp]
+        for wp in wps:
+            wp_ = mavutil.mavlink.MAVLink_mission_item_message(
+                self.master.target_system,
+                self.master.target_component,
+                -1, # to be set
+                mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT,
+                mavutil.mavlink.MAV_CMD_NAV_SPLINE_WAYPOINT,
+                0,
+                0,
+                0, # min pitch
+                0,
+                0,
+                0,
+                wp[0],
+                wp[1],
+                alt)
+            wps_.append(wp_)
+        self._sendMission(wps_)
 
 
     def getPosition(self):
